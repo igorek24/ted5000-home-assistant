@@ -1,0 +1,237 @@
+<SystemSettings>
+    <NumberMTU>2</NumberMTU>
+
+
+    <DemoMode>0</DemoMode>
+    <NumberDisplay>0</NumberDisplay>
+    <DateTime>
+        <UseServer>1</UseServer>
+        <ServerAddress>0.us.pool.ntp.org</ServerAddress>
+        <UseDLST>1</UseDLST>
+        <InDLST>1</InDLST>
+        <TimeZone>-80</TimeZone>
+    </DateTime>
+
+    <Configuration>
+        <SystemType>2</SystemType>
+        <MTUType1>1</MTUType1>
+        <MTUType2>2</MTUType2>
+        <MTUType3>0</MTUType3>
+        <MTUType4>0</MTUType4>
+    </Configuration>
+
+    <USNAP>
+        <USNAPType1>0</USNAPType1>
+        <USNAPType2>0</USNAPType2>
+    </USNAP>
+
+    <MTUPollingDelay>1</MTUPollingDelay>
+
+    <MTUs>
+        <MTU>
+            <MTUNumber>1</MTUNumber>
+            <MTUID>170929</MTUID>
+            <MTUDescription>Grid</MTUDescription>
+            <PowerCalibrationFactor>1000</PowerCalibrationFactor>
+            <VoltageCalibrationFactor>1000</VoltageCalibrationFactor>
+            <UseTCP>0</UseTCP>
+            <MTUIP>0.0.0.0</MTUIP>
+        </MTU>
+        <MTU>
+            <MTUNumber>2</MTUNumber>
+            <MTUID>170926</MTUID>
+            <MTUDescription>Solar</MTUDescription>
+            <PowerCalibrationFactor>1000</PowerCalibrationFactor>
+            <VoltageCalibrationFactor>1000</VoltageCalibrationFactor>
+            <UseTCP>0</UseTCP>
+            <MTUIP>0.0.0.0</MTUIP>
+        </MTU>
+        <MTU>
+            <MTUNumber>3</MTUNumber>
+            <MTUID>000000</MTUID>
+            <MTUDescription></MTUDescription>
+            <PowerCalibrationFactor>1000</PowerCalibrationFactor>
+            <VoltageCalibrationFactor>1000</VoltageCalibrationFactor>
+            <UseTCP>0</UseTCP>
+            <MTUIP>0.0.0.0</MTUIP>
+        </MTU>
+        <MTU>
+            <MTUNumber>4</MTUNumber>
+            <MTUID>000000</MTUID>
+            <MTUDescription></MTUDescription>
+            <PowerCalibrationFactor>1000</PowerCalibrationFactor>
+            <VoltageCalibrationFactor>1000</VoltageCalibrationFactor>
+            <UseTCP>0</UseTCP>
+            <MTUIP>0.0.0.0</MTUIP>
+        </MTU>
+
+        <PEUAT>10</PEUAT>
+        <PVAT>10</PVAT>
+
+    </MTUs>
+
+    <Gateway>
+        <GatewayID>26223E</GatewayID>
+        <GatewayDescription></GatewayDescription>
+    </Gateway>
+
+
+    <Displays>
+        <DisplaySettings>
+            <BacklightUnderPower>60</BacklightUnderPower>
+            <BacklightUnderBattery>40</BacklightUnderBattery>
+            <BacklightTimer>30</BacklightTimer>
+            <ScrollTimer>5</ScrollTimer>
+            <SleepTimer>120</SleepTimer>
+            <RealTimeUseScreen>TRUE</RealTimeUseScreen>
+            <RecentUsageScreen>TRUE</RecentUsageScreen>
+            <MonthToDateScreen>TRUE</MonthToDateScreen>
+            <MonthlyProjectionScreen>TRUE</MonthlyProjectionScreen>
+            <VoltageScreen>TRUE</VoltageScreen>
+            <KWDetailScreen>FALSE</KWDetailScreen>
+            <SpendingDetailTdyScreen>FALSE</SpendingDetailTdyScreen>
+            <CO2TodayScreen>FALSE</CO2TodayScreen>
+            <MultiPanel1Screen>FALSE</MultiPanel1Screen>
+            <MultiPanel2Screen>FALSE</MultiPanel2Screen>
+            <Contrast>47</Contrast>
+        </DisplaySettings>
+
+        <Display>
+            <DisplayNumber>1</DisplayNumber>
+            <DisplayID>000000</DisplayID>
+            <DisplayDescription></DisplayDescription>
+        </Display>
+        <Display>
+            <DisplayNumber>2</DisplayNumber>
+            <DisplayID>000000</DisplayID>
+            <DisplayDescription></DisplayDescription>
+        </Display>
+        <Display>
+            <DisplayNumber>3</DisplayNumber>
+            <DisplayID>000000</DisplayID>
+            <DisplayDescription></DisplayDescription>
+        </Display>
+        <Display>
+            <DisplayNumber>4</DisplayNumber>
+            <DisplayID>000000</DisplayID>
+            <DisplayDescription></DisplayDescription>
+        </Display>
+
+
+    </Displays>
+
+    <HasYitran>1</HasYitran>
+
+    <CarbonCost>155</CarbonCost>
+
+    <NetworkSettings>
+        <UseDHCP>0</UseDHCP>
+        <IPAddress>172.22.2.222</IPAddress>
+        <SubnetMask>255.255.255.0</SubnetMask>
+        <GatewayAddress>172.22.2.1</GatewayAddress>
+        <PrimaryDNSServer>172.22.3.3</PrimaryDNSServer>
+        <SecondaryDNSServer>172.22.3.4</SecondaryDNSServer>
+        <NetBiosName>TED6000        </NetBiosName>
+        <HTTPPort>80</HTTPPort>
+        <HTTPSPort>443</HTTPSPort>
+
+    </NetworkSettings>
+
+    <Username>igor</Username>
+    <PasswordAll>0</PasswordAll>
+    <PasswordConf>1</PasswordConf>
+
+    <Spyders>
+        <Spyder>
+            <Enabled>1</Enabled>
+            <Secondary>0</Secondary>
+            <MTUParent>0</MTUParent>
+            <CT><Type>1</Type><Mult>100</Mult><Description>1ST FL L</Description></CT>
+            <CT><Type>1</Type><Mult>100</Mult><Description>2ND FL L</Description></CT>
+            <CT><Type>1</Type><Mult>100</Mult><Description>DWNST B</Description></CT>
+            <CT><Type>1</Type><Mult>100</Mult><Description>Bathroom</Description></CT>
+            <CT><Type>1</Type><Mult>100</Mult><Description>Backyard</Description></CT>
+            <CT><Type>0</Type><Mult>100</Mult><Description>Oven</Description></CT>
+            <CT><Type>0</Type><Mult>100</Mult><Description>Dryer</Description></CT>
+            <CT><Type>0</Type><Mult>100</Mult><Description>AC</Description></CT>
+            <Group><Description>1ST FL L</Description><UseCT>1</UseCT></Group>
+            <Group><Description>2ND FL L</Description><UseCT>2</UseCT></Group>
+            <Group><Description>DWNST BED</Description><UseCT>4</UseCT></Group>
+            <Group><Description>Bathrooms</Description><UseCT>8</UseCT></Group>
+            <Group><Description>Backyard</Description><UseCT>16</UseCT></Group>
+            <Group><Description>Oven</Description><UseCT>32</UseCT></Group>
+            <Group><Description>Dryer</Description><UseCT>64</UseCT></Group>
+            <Group><Description>AC</Description><UseCT>128</UseCT></Group>
+        </Spyder>
+        <Spyder>
+            <Enabled>1</Enabled>
+            <Secondary>1</Secondary>
+            <MTUParent>0</MTUParent>
+            <CT><Type>0</Type><Mult>100</Mult><Description>POOL L1</Description></CT>
+            <CT><Type>0</Type><Mult>100</Mult><Description>POOL L2</Description></CT>
+            <CT><Type>1</Type><Mult>100</Mult><Description>GARAGE L</Description></CT>
+            <CT><Type>1</Type><Mult>100</Mult><Description>KITCHEN1</Description></CT>
+            <CT><Type>1</Type><Mult>100</Mult><Description>KITCHEN2</Description></CT>
+            <CT><Type>1</Type><Mult>100</Mult><Description>MASTEBDM</Description></CT>
+            <CT><Type>1</Type><Mult>100</Mult><Description>LIVINGRM</Description></CT>
+            <CT><Type>1</Type><Mult>100</Mult><Description>DISHWASH</Description></CT>
+            <Group><Description>POOL L1</Description><UseCT>1</UseCT></Group>
+            <Group><Description>POOL L2</Description><UseCT>2</UseCT></Group>
+            <Group><Description>GARAGE L</Description><UseCT>4</UseCT></Group>
+            <Group><Description>KITCHEN1</Description><UseCT>8</UseCT></Group>
+            <Group><Description>KITCHEN12</Description><UseCT>16</UseCT></Group>
+            <Group><Description>MASTEBDM</Description><UseCT>32</UseCT></Group>
+            <Group><Description>LIVINGRM</Description><UseCT>64</UseCT></Group>
+            <Group><Description>DISHWASH</Description><UseCT>128</UseCT></Group>
+        </Spyder>
+        <Spyder>
+            <Enabled>1</Enabled>
+            <Secondary>0</Secondary>
+            <MTUParent>1</MTUParent>
+            <CT><Type>1</Type><Mult>100</Mult><Description>DYNING R</Description></CT>
+            <CT><Type>1</Type><Mult>100</Mult><Description>FRIDGE/R</Description></CT>
+            <CT><Type>1</Type><Mult>100</Mult><Description>WASHER</Description></CT>
+            <CT><Type>1</Type><Mult>100</Mult><Description>MIAS BED</Description></CT>
+            <CT><Type>1</Type><Mult>100</Mult><Description>EVYS BED</Description></CT>
+            <CT><Type>0</Type><Mult>100</Mult><Description>GENY1</Description></CT>
+            <CT><Type>0</Type><Mult>100</Mult><Description>GENY2</Description></CT>
+            <CT><Type>0</Type><Mult>100</Mult><Description>GENY1</Description></CT>
+            <Group><Description>DYNING R</Description><UseCT>1</UseCT></Group>
+            <Group><Description>FRIDGE/R</Description><UseCT>2</UseCT></Group>
+            <Group><Description>WASHER</Description><UseCT>4</UseCT></Group>
+            <Group><Description>MIAS BED</Description><UseCT>8</UseCT></Group>
+            <Group><Description>EVYS BED</Description><UseCT>16</UseCT></Group>
+            <Group><Description>GENY1</Description><UseCT>32</UseCT></Group>
+            <Group><Description>GENY2</Description><UseCT>64</UseCT></Group>
+            <Group><Description>GARAGE L1</Description><UseCT>0</UseCT></Group>
+        </Spyder>
+        <Spyder>
+            <Enabled>1</Enabled>
+            <Secondary>1</Secondary>
+            <MTUParent>1</MTUParent>
+            <CT><Type>1</Type><Mult>100</Mult><Description>1ST FLXX</Description></CT>
+            <CT><Type>1</Type><Mult>100</Mult><Description>Garage L</Description></CT>
+            <CT><Type>1</Type><Mult>100</Mult><Description>CT 3</Description></CT>
+            <CT><Type>1</Type><Mult>100</Mult><Description>CT 4</Description></CT>
+            <CT><Type>1</Type><Mult>100</Mult><Description>CT 5</Description></CT>
+            <CT><Type>1</Type><Mult>100</Mult><Description>CT 6</Description></CT>
+            <CT><Type>1</Type><Mult>100</Mult><Description>CT 7</Description></CT>
+            <CT><Type>1</Type><Mult>100</Mult><Description>CT 8</Description></CT>
+            <Group><Description>1ST FLXX</Description><UseCT>0</UseCT></Group>
+            <Group><Description>Garage L</Description><UseCT>0</UseCT></Group>
+            <Group><Description></Description><UseCT>0</UseCT></Group>
+            <Group><Description></Description><UseCT>0</UseCT></Group>
+            <Group><Description></Description><UseCT>0</UseCT></Group>
+            <Group><Description></Description><UseCT>0</UseCT></Group>
+            <Group><Description></Description><UseCT>0</UseCT></Group>
+            <Group><Description></Description><UseCT>0</UseCT></Group>
+        </Spyder>
+    </Spyders>
+
+
+    <ECCDisplay>
+        <ScrollModeEnable>0</ScrollModeEnable>
+        <ScrollModeTimer>5</ScrollModeTimer>
+        <Contrast>80</Contrast>
+    </ECCDisplay>
+</SystemSettings>
