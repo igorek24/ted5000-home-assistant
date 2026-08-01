@@ -27,6 +27,24 @@ from .coordinator import TedCoordinator
 
 RATE_UNIT = f"{CURRENCY_DOLLAR}/{UnitOfEnergy.KILO_WATT_HOUR}"
 
+# A TED MTU reports a single voltage. On a US split-phase service that is
+# normally one leg (line-to-neutral, ~120 V); line-to-line is twice that.
+# If the MTU happens to be wired across both legs it already reads ~240 V,
+# so derive from whichever side of this threshold the reading falls.
+SPLIT_PHASE_THRESHOLD = 150
+
+
+def _line_to_line(voltage: float | None) -> float | None:
+    if voltage is None:
+        return None
+    return round(voltage * 2, 1) if voltage < SPLIT_PHASE_THRESHOLD else round(voltage, 1)
+
+
+def _line_to_neutral(voltage: float | None) -> float | None:
+    if voltage is None:
+        return None
+    return round(voltage, 1) if voltage < SPLIT_PHASE_THRESHOLD else round(voltage / 2, 1)
+
 FLOW_LABEL = {
     D_NET: "Net",
     D_CONSUMPTION: "Consumption",
@@ -58,10 +76,12 @@ async def async_setup_entry(
     entities.append(TedRateSensor(coordinator))
     entities.append(TedDaysLeftSensor(coordinator))
     entities.append(TedVoltageSensor(coordinator))
+    entities.append(TedVoltageL2LSensor(coordinator))
 
     for number in data.mtus:
         entities.append(TedMtuPowerSensor(coordinator, number))
         entities.append(TedMtuVoltageSensor(coordinator, number))
+        entities.append(TedMtuVoltageL2LSensor(coordinator, number))
         entities.append(TedMtuPowerFactorSensor(coordinator, number))
         entities.append(TedMtuApparentPowerSensor(coordinator, number))
 
@@ -221,7 +241,7 @@ class TedDaysLeftSensor(TedEntity):
 
 
 class TedVoltageSensor(TedEntity):
-    _attr_name = "Line voltage"
+    _attr_name = "Line voltage (leg)"
     _attr_device_class = SensorDeviceClass.VOLTAGE
     _attr_native_unit_of_measurement = UnitOfElectricPotential.VOLT
     _attr_state_class = SensorStateClass.MEASUREMENT
@@ -234,6 +254,28 @@ class TedVoltageSensor(TedEntity):
     @property
     def native_value(self) -> float | None:
         return self.coordinator.data.voltage
+
+
+class TedVoltageL2LSensor(TedEntity):
+    """Line-to-line voltage (~240 V), derived from the reported leg voltage."""
+
+    _attr_name = "Line-to-line voltage"
+    _attr_device_class = SensorDeviceClass.VOLTAGE
+    _attr_native_unit_of_measurement = UnitOfElectricPotential.VOLT
+    _attr_state_class = SensorStateClass.MEASUREMENT
+    _attr_suggested_display_precision = 1
+
+    def __init__(self, coordinator: TedCoordinator) -> None:
+        super().__init__(coordinator)
+        self._attr_unique_id = f"{self._gateway_id}_voltage_l2l"
+
+    @property
+    def native_value(self) -> float | None:
+        return _line_to_line(self.coordinator.data.voltage)
+
+    @property
+    def extra_state_attributes(self) -> dict:
+        return {"derived_from_leg_voltage": True}
 
 
 # -- per-MTU sensors ---------------------------------------------------------
@@ -283,7 +325,7 @@ class TedMtuPowerSensor(TedMtuEntity):
 
 
 class TedMtuVoltageSensor(TedMtuEntity):
-    _attr_name = "Voltage"
+    _attr_name = "Voltage (leg)"
     _attr_device_class = SensorDeviceClass.VOLTAGE
     _attr_native_unit_of_measurement = UnitOfElectricPotential.VOLT
     _attr_state_class = SensorStateClass.MEASUREMENT
@@ -297,6 +339,33 @@ class TedMtuVoltageSensor(TedMtuEntity):
     def native_value(self) -> float | None:
         mtu = self._mtu
         return mtu.voltage if mtu else None
+
+
+class TedMtuVoltageL2LSensor(TedMtuEntity):
+    """Line-to-line voltage (~240 V) for this MTU."""
+
+    _attr_name = "Line-to-line voltage"
+    _attr_device_class = SensorDeviceClass.VOLTAGE
+    _attr_native_unit_of_measurement = UnitOfElectricPotential.VOLT
+    _attr_state_class = SensorStateClass.MEASUREMENT
+    _attr_suggested_display_precision = 1
+
+    def __init__(self, coordinator: TedCoordinator, number: int) -> None:
+        super().__init__(coordinator, number)
+        self._attr_unique_id = f"{self._gateway_id}_mtu{number}_voltage_l2l"
+
+    @property
+    def native_value(self) -> float | None:
+        mtu = self._mtu
+        return _line_to_line(mtu.voltage) if mtu else None
+
+    @property
+    def extra_state_attributes(self) -> dict:
+        mtu = self._mtu
+        return {
+            "leg_voltage": _line_to_neutral(mtu.voltage) if mtu else None,
+            "derived_from_leg_voltage": True,
+        }
 
 
 class TedMtuPowerFactorSensor(TedMtuEntity):

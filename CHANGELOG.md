@@ -15,3 +15,11 @@ Initial release. Developed against a live TED5000 with the solar package,
   per-circuit energy sensors, diagnostics
 - Uses the endpoints modern TED5000 firmware actually serves, rather than
   the `LiveData.xml` endpoint the built-in integration requires
+
+## 0.1.1 — 2026-07-31
+
+- Added line-to-line (~240 V) voltage sensors for the gateway and each MTU,
+  derived from the reported leg voltage (auto-detects whether the MTU is
+  wired line-to-neutral or line-to-line)
+- Existing voltage sensors relabelled "(leg)" for clarity
+- Integration renamed to simply "TED5000 Pro"

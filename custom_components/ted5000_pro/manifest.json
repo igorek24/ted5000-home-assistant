@@ -1,6 +1,6 @@
 {
   "domain": "ted5000_pro",
-  "name": "TED5000 Pro - Energy Detective with Solar & Spyders",
+  "name": "TED5000 Pro",
   "codeowners": ["@igorek24"],
   "config_flow": true,
   "documentation": "https://github.com/igorek24/ted5000-home-assistant",
@@ -9,5 +9,5 @@
   "issue_tracker": "https://github.com/igorek24/ted5000-home-assistant/issues",
   "loggers": ["custom_components.ted5000_pro"],
   "requirements": [],
-  "version": "0.1.0"
+  "version": "0.1.1"
 }

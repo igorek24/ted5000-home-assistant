@@ -72,9 +72,20 @@ circuits arrive already named — and groups that aren't wired to a CT
 | `sensor.ted5000_projected_bill_this_month` | The gateway's own projection |
 | `sensor.ted5000_utility_rate` | $/kWh from your TED rate settings |
 | `sensor.ted5000_days_left_in_billing_period` | With `meter_read_day` attribute |
-| `sensor.ted5000_line_voltage` | Volts |
+| `sensor.ted5000_line_voltage` | Leg voltage (line-to-neutral, ~120 V) |
+| `sensor.ted5000_line_to_line_voltage` | Line-to-line (~240 V), derived from the leg voltage |
 
-**Per MTU** (e.g. *Grid*, *Solar*): power, voltage, power factor, apparent power (disabled by default).
+**Per MTU** (e.g. *Grid*, *Solar*): power, leg voltage, line-to-line voltage, power factor, apparent power (disabled by default).
+
+### A note on 120 V vs 240 V
+
+A TED MTU reports a **single** voltage, which on a US split-phase service is
+one leg (line-to-neutral, ~120 V) — that is all the gateway's API exposes,
+and it is what the Footprints UI reads too. This integration also publishes
+a **line-to-line** figure (~240 V) derived from it: doubled when the reading
+looks like a leg (< 150 V), or passed through when the MTU is wired across
+both legs and already reads ~240 V. Derived sensors carry a
+`derived_from_leg_voltage` attribute so it is obvious which is measured.
 
 **Per circuit** (one device per Spyder group): power, energy today, energy this month.
 
