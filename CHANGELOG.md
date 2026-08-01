@@ -23,3 +23,12 @@ Initial release. Developed against a live TED5000 with the solar package,
   wired line-to-neutral or line-to-line)
 - Existing voltage sensors relabelled "(leg)" for clarity
 - Integration renamed to simply "TED5000 Pro"
+
+## 0.2.0 — 2026-07-31
+
+- Phantom (standby) load tracking: nightly quiet-window minimum, rolling
+  average over a configurable number of days, and its monthly cost at the
+  current utility rate
+- History persists across restarts; wrapping windows (e.g. 23:00-05:00)
+  are treated as a single night
+- New options: phantom days to average, quiet window start and end

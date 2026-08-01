@@ -9,5 +9,5 @@
   "issue_tracker": "https://github.com/igorek24/ted5000-home-assistant/issues",
   "loggers": ["custom_components.ted5000_pro"],
   "requirements": [],
-  "version": "0.1.1"
+  "version": "0.2.0"
 }

@@ -29,8 +29,11 @@ Footprints software, no YAML.
 - **Energy dashboard ready** — energy sensors are `total_increasing` kWh,
   so grid consumption, solar production and individual devices all plug
   straight in
-- Config flow, options (polling interval, optional per-circuit energy
-  sensors), diagnostics
+- **Phantom (standby) load tracking** — records the quiet-hours floor each
+  night, averages it over N days, and prices it per month, so a creeping
+  baseline is visible instead of buried in the daily total
+- Config flow, options (polling interval, per-circuit energy sensors,
+  phantom window and averaging days), diagnostics
 
 ## Installation
 
@@ -59,6 +62,8 @@ circuits arrive already named — and groups that aren't wired to a CT
 |---|---|---|
 | Polling interval (seconds) | `10` | The gateway updates about once a second; 10 s is a good balance. 5–300 allowed. |
 | Per-circuit energy sensors | on | Creates `energy today` / `energy this month` for each circuit. Turn off if you only want live power. |
+| Phantom days to average | `7` | How many nights the phantom average covers (1–90). |
+| Phantom window start / end | `01:00` / `05:00` | The quiet hours used to measure the standby floor. A window that crosses midnight (e.g. `23:00`–`05:00`) is treated as one night. |
 
 ## Entities
 
@@ -88,6 +93,36 @@ both legs and already reads ~240 V. Derived sensors carry a
 `derived_from_leg_voltage` attribute so it is obvious which is measured.
 
 **Per circuit** (one device per Spyder group): power, energy today, energy this month.
+
+### Phantom (standby) load
+
+Three sensors quantify what the house draws when nothing is meant to be running:
+
+| Entity | Meaning |
+|---|---|
+| `sensor.ted5000_phantom_load` | The lowest consumption seen during tonight's quiet window (live while the window is open, otherwise the last completed night) |
+| `sensor.ted5000_phantom_load_average_7d` | Mean of the last N nights, with each night listed in the `nightly` attribute, plus `lowest`, `highest` and `vs_average_pct` |
+| `sensor.ted5000_phantom_load_monthly_cost` | What that average costs per month at your current rate |
+
+History survives restarts, and the averaging window is a rolling buffer, so
+the average always reflects the most recent N nights. A useful alert:
+
+```yaml
+automation:
+  - alias: "Phantom load is creeping up"
+    trigger:
+      - platform: numeric_state
+        entity_id: sensor.ted5000_phantom_load
+        value_template: "{{ state_attr('sensor.ted5000_phantom_load_average_7d','vs_average_pct') }}"
+        above: 25
+    action:
+      - action: notify.mobile_app
+        data:
+          message: >
+            Standby load is {{ states('sensor.ted5000_phantom_load') }} W,
+            {{ state_attr('sensor.ted5000_phantom_load_average_7d','vs_average_pct') }}%
+            above the 7-day average - something may have been left on.
+```
 
 ## Energy dashboard
 

@@ -18,11 +18,25 @@ from homeassistant.const import (
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from homeassistant.helpers.restore_state import RestoredExtraData, RestoreEntity
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
+from homeassistant.util import dt as dt_util
 
 from . import TedConfigEntry
 from .api import D_CONSUMPTION, D_NET, D_PRODUCTION
-from .const import CONF_CREATE_CIRCUIT_ENERGY, DOMAIN, MANUFACTURER, MODEL
+from .const import (
+    CONF_CREATE_CIRCUIT_ENERGY,
+    CONF_PHANTOM_DAYS,
+    CONF_PHANTOM_END,
+    CONF_PHANTOM_START,
+    DEFAULT_PHANTOM_DAYS,
+    DEFAULT_PHANTOM_END,
+    DEFAULT_PHANTOM_START,
+    DOMAIN,
+    MANUFACTURER,
+    MODEL,
+)
+from .phantom import PhantomTracker, parse_time
 from .coordinator import TedCoordinator
 
 RATE_UNIT = f"{CURRENCY_DOLLAR}/{UnitOfEnergy.KILO_WATT_HOUR}"
@@ -77,6 +91,21 @@ async def async_setup_entry(
     entities.append(TedDaysLeftSensor(coordinator))
     entities.append(TedVoltageSensor(coordinator))
     entities.append(TedVoltageL2LSensor(coordinator))
+
+    import datetime as _dt
+
+    tracker = PhantomTracker(
+        days=entry.options.get(CONF_PHANTOM_DAYS, DEFAULT_PHANTOM_DAYS),
+        window_start=parse_time(
+            entry.options.get(CONF_PHANTOM_START, DEFAULT_PHANTOM_START), _dt.time(1, 0)
+        ),
+        window_end=parse_time(
+            entry.options.get(CONF_PHANTOM_END, DEFAULT_PHANTOM_END), _dt.time(5, 0)
+        ),
+    )
+    entities.append(TedPhantomNowSensor(coordinator, tracker))
+    entities.append(TedPhantomAverageSensor(coordinator, tracker))
+    entities.append(TedPhantomCostSensor(coordinator, tracker))
 
     for number in data.mtus:
         entities.append(TedMtuPowerSensor(coordinator, number))
@@ -476,3 +505,124 @@ class TedCircuitEnergySensor(TedCircuitEntity):
             return None
         raw = circuit.energy_today if self._period == "today" else circuit.energy_mtd
         return None if raw is None else raw / 1000
+
+
+# -- phantom (standby) load --------------------------------------------------
+
+
+class TedPhantomBase(TedEntity, RestoreEntity):
+    """Shares one tracker between the phantom sensors of an entry."""
+
+    def __init__(self, coordinator: TedCoordinator, tracker: PhantomTracker) -> None:
+        super().__init__(coordinator)
+        self._tracker = tracker
+
+    async def async_added_to_hass(self) -> None:
+        await super().async_added_to_hass()
+        if (last := await self.async_get_last_extra_data()) is not None:
+            self._tracker.restore(last.as_dict().get("tracker"))
+        self._record()
+
+    @property
+    def extra_restore_state_data(self) -> RestoredExtraData:
+        return RestoredExtraData({"tracker": self._tracker.as_dict()})
+
+    def _record(self) -> None:
+        totals = self.coordinator.data.energy.get(D_CONSUMPTION)
+        if totals is not None:
+            self._tracker.update(dt_util.now(), totals.now)
+
+    def _handle_coordinator_update(self) -> None:
+        self._record()
+        super()._handle_coordinator_update()
+
+
+class TedPhantomNowSensor(TedPhantomBase):
+    """Tonight's standby floor (or the last completed night)."""
+
+    _attr_name = "Phantom load"
+    _attr_device_class = SensorDeviceClass.POWER
+    _attr_native_unit_of_measurement = UnitOfPower.WATT
+    _attr_state_class = SensorStateClass.MEASUREMENT
+    _attr_icon = "mdi:sleep"
+
+    def __init__(self, coordinator: TedCoordinator, tracker: PhantomTracker) -> None:
+        super().__init__(coordinator, tracker)
+        self._attr_unique_id = f"{self._gateway_id}_phantom_now"
+
+    @property
+    def native_value(self) -> float | None:
+        return self._tracker.current
+
+    @property
+    def extra_state_attributes(self) -> dict:
+        return {
+            "measuring_now": self._tracker.in_window(dt_util.now()),
+            "window": f"{self._tracker.window_start:%H:%M}-{self._tracker.window_end:%H:%M}",
+        }
+
+
+class TedPhantomAverageSensor(TedPhantomBase):
+    """Average standby floor across the configured number of days."""
+
+    _attr_device_class = SensorDeviceClass.POWER
+    _attr_native_unit_of_measurement = UnitOfPower.WATT
+    _attr_state_class = SensorStateClass.MEASUREMENT
+    _attr_suggested_display_precision = 0
+    _attr_icon = "mdi:chart-timeline-variant"
+
+    def __init__(self, coordinator: TedCoordinator, tracker: PhantomTracker) -> None:
+        super().__init__(coordinator, tracker)
+        self._attr_name = f"Phantom load average ({tracker.days}d)"
+        self._attr_unique_id = f"{self._gateway_id}_phantom_average"
+
+    @property
+    def native_value(self) -> float | None:
+        average = self._tracker.average
+        return None if average is None else round(average, 1)
+
+    @property
+    def extra_state_attributes(self) -> dict:
+        history = self._tracker.history
+        values = [item.watts for item in history]
+        attrs: dict = {
+            "days_configured": self._tracker.days,
+            "days_recorded": len(history),
+            "window": f"{self._tracker.window_start:%H:%M}-{self._tracker.window_end:%H:%M}",
+            "nightly": {item.day: item.watts for item in history},
+        }
+        if values:
+            attrs["lowest"] = min(values)
+            attrs["highest"] = max(values)
+            latest = self._tracker.current
+            average = self._tracker.average
+            if latest is not None and average:
+                attrs["vs_average_pct"] = round((latest - average) / average * 100, 1)
+        return attrs
+
+
+class TedPhantomCostSensor(TedPhantomBase):
+    """What the averaged standby load costs per month at the current rate."""
+
+    _attr_name = "Phantom load monthly cost"
+    _attr_device_class = SensorDeviceClass.MONETARY
+    _attr_native_unit_of_measurement = CURRENCY_DOLLAR
+    _attr_suggested_display_precision = 2
+    _attr_icon = "mdi:cash-remove"
+
+    def __init__(self, coordinator: TedCoordinator, tracker: PhantomTracker) -> None:
+        super().__init__(coordinator, tracker)
+        self._attr_unique_id = f"{self._gateway_id}_phantom_cost"
+
+    @property
+    def native_value(self) -> float | None:
+        cost = self._tracker.monthly_cost(self.coordinator.data.rate)
+        return None if cost is None else round(cost, 2)
+
+    @property
+    def extra_state_attributes(self) -> dict:
+        average = self._tracker.average
+        return {
+            "based_on_watts": None if average is None else round(average, 1),
+            "rate": self.coordinator.data.rate,
+        }

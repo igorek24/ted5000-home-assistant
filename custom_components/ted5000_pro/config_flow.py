@@ -18,7 +18,15 @@ from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from .api import TedAuthError, TedConnectionError, Ted5000Client
 from .const import (
     CONF_CREATE_CIRCUIT_ENERGY,
+    CONF_PHANTOM_DAYS,
+    CONF_PHANTOM_END,
+    CONF_PHANTOM_START,
     CONF_SCAN_INTERVAL_SECONDS,
+    DEFAULT_PHANTOM_DAYS,
+    DEFAULT_PHANTOM_END,
+    DEFAULT_PHANTOM_START,
+    MAX_PHANTOM_DAYS,
+    MIN_PHANTOM_DAYS,
     DEFAULT_PORT,
     DEFAULT_SCAN_INTERVAL,
     DOMAIN,
@@ -101,6 +109,21 @@ class TedOptionsFlow(OptionsFlow):
                         CONF_CREATE_CIRCUIT_ENERGY,
                         default=options.get(CONF_CREATE_CIRCUIT_ENERGY, True),
                     ): bool,
+                    vol.Required(
+                        CONF_PHANTOM_DAYS,
+                        default=options.get(CONF_PHANTOM_DAYS, DEFAULT_PHANTOM_DAYS),
+                    ): vol.All(
+                        vol.Coerce(int),
+                        vol.Range(min=MIN_PHANTOM_DAYS, max=MAX_PHANTOM_DAYS),
+                    ),
+                    vol.Required(
+                        CONF_PHANTOM_START,
+                        default=options.get(CONF_PHANTOM_START, DEFAULT_PHANTOM_START),
+                    ): str,
+                    vol.Required(
+                        CONF_PHANTOM_END,
+                        default=options.get(CONF_PHANTOM_END, DEFAULT_PHANTOM_END),
+                    ): str,
                 }
             ),
         )

@@ -26,7 +26,10 @@
         "title": "TED5000 options",
         "data": {
           "scan_interval_seconds": "Polling interval in seconds",
-          "create_circuit_energy": "Create energy sensors for each submetered circuit (needed for per-device tracking in the Energy dashboard)"
+          "create_circuit_energy": "Create energy sensors for each submetered circuit (needed for per-device tracking in the Energy dashboard)",
+          "phantom_days": "Phantom load: number of days to average",
+          "phantom_window_start": "Phantom load: quiet window start (HH:MM)",
+          "phantom_window_end": "Phantom load: quiet window end (HH:MM)"
         }
       }
     }
