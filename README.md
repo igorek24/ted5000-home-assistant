@@ -1,5 +1,12 @@
 # TED5000 Pro for Home Assistant
 
+[![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=igorek24&repository=ted5000-home-assistant&category=integration)
+[![Open your Home Assistant instance and start setting up a new integration.](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=ted5000_pro)
+
+[![GitHub release](https://img.shields.io/github/v/release/igorek24/ted5000-home-assistant?style=flat-square)](https://github.com/igorek24/ted5000-home-assistant/releases)
+[![License](https://img.shields.io/github/license/igorek24/ted5000-home-assistant?style=flat-square)](LICENSE)
+[![hacs](https://img.shields.io/badge/HACS-custom-41BDF5.svg?style=flat-square)](https://hacs.xyz)
+
 Home Assistant integration for **The Energy Detective TED5000** whole-house
 energy monitors — including the **solar / net-metering package** and
 **Spyder submetering** (up to 32 individual circuits).
@@ -39,7 +46,9 @@ Footprints software, no YAML.
 
 ### HACS
 
-HACS → ⋮ → **Custom repositories** → `https://github.com/igorek24/ted5000-home-assistant`,
+**Easiest:** click the blue *My Home Assistant* badge at the top of this page — it opens your own Home Assistant and pre-fills this repository as a HACS custom repository. Then Download and restart.
+
+Manually: HACS → ⋮ → **Custom repositories** → `https://github.com/igorek24/ted5000-home-assistant`,
 type **Integration** → Download → restart Home Assistant.
 
 ### Manual
